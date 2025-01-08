@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <div id="root"></div>
+</body>
+<!-- This setup is not suitable for production. -->
+<!-- Only use it in development! -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react?dev",
+    "react-dom/client": "https://esm.sh/react-dom/client?dev"
+  }
+}
+</script>
+<script type="text/babel" data-type="module">
+  import React, { StrictMode } from 'react';
+  import { createRoot } from 'react-dom/client';
+  import { useState } from 'react';
+
+  const SAMPLE = {
+    "upper": `
+      str = str.toUpperCase();
+      `,
+    "lower": `
+      str = str.toLowerCase();
+      `,
+    "replace": `
+      from = "abc";
+      to = "xyz";
+      str = str.replaceAll(from, to);
+      str = str.replace(/ABC/g, "XYZ");
+      `,
+    "reverse": `
+      sep = " ";
+      str = str.split(sep).reverse().join(sep);
+      `,
+  }
+  const cleanSampleScript = function (str) {
+    str = str.replace(/\n      /g, "\n"); // 行頭8Space
+    str = str.replace(/^\n/i, ""); // 最初の行
+    return str;
+  };
+
+  function loadData() {
+    // localStorage.clear();
+    const data = localStorage.getItem('data');
+    if (data) {
+      const d = JSON.parse(data);
+      if (Object.keys(d).length > 0) return d;
+    }
+    return Object.fromEntries(
+      Object.entries(SAMPLE).map((
+        [key, val]) => [key, cleanSampleScript(val)]
+      ));
+  }
+
+  function saveData(data) {
+    localStorage.setItem('data', JSON.stringify(data));
+  }
+
+
+  let App = function Form() {
+
+    const DATA = loadData();
+
+    const key0 = Object.keys(DATA)[0];
+    const [func, setFunc] = useState(key0);
+    const [funcName, setFuncName] = useState(key0);
+    const [script_text, setScriptText] = useState(DATA[key0]);
+    const [input_text, setInputText] = useState('');
+    const [output_text, setOutputText] = useState('');
+    const [edit_mode, changeEditMode] = useState(false);
+    const [error_message, setErrorMessage] = useState("");
+
+    function changeInputText(str, script) {
+      setInputText(str);
+      setScriptText(script);
+
+      try {
+        const f = new Function('str', script + 'return str;');
+        str = f(str);
+        setErrorMessage("");
+      } catch (e) {
+        setErrorMessage(e.message);
+      }
+      setOutputText(str);
+    }
+
+    function changeScript(title) {
+      setFunc(title);
+      setFuncName(title);
+
+      const script = DATA[title];
+      changeInputText(input_text, script);
+    }
+
+    function clickEdit() {
+      changeEditMode(!edit_mode);
+    }
+
+    function clickSave() {
+      DATA[funcName] = script_text;
+      saveData(DATA);
+      changeScript(funcName);
+    }
+
+    function clickRemove() {
+      delete DATA[funcName];
+      saveData(DATA);
+      changeScript(Object.keys(DATA)[0]);
+    }
+
+    function intoOutput(e){
+      e.target.select();
+    }
+
+    return (
+      <div>
+        <label className="field">
+          Function:
+          <select
+            value={func}
+            onChange={e => changeScript(e.target.value)}>
+            {
+              Object.entries(DATA).map(([key, val]) => {
+                return (<option key={key} value={key}>{key}</option>);
+              })
+            }
+          </select>
+          <input
+            style={{ display: edit_mode ? "block" : "none" }}
+            value={funcName}
+            onChange={e => setFuncName(e.target.value)}
+          />
+        </label>
+        <label style={{ display: edit_mode ? "block" : "none" }}>
+          Script:
+          <textarea
+            placeholder="Script Text"
+            value={script_text}
+            onChange={e => changeInputText(input_text, e.target.value)}
+          />
+        </label>
+        <div
+          className="field"
+          style={{ display: edit_mode ? "block" : "none" }}
+        >
+          <button
+            onClick={clickSave}
+          >
+            save
+          </button>
+          <button
+            onClick={clickRemove}
+          >
+            remove
+          </button>
+        </div>
+        <label>
+          Input:
+          <textarea
+            placeholder="Input Text"
+            value={input_text}
+            onChange={e => changeInputText(e.target.value, script_text)}
+          />
+        </label>
+        <label>
+          Output:
+          <textarea
+            placeholder="Output Text"
+            readOnly
+            value={output_text}
+            onMouseOver={e => intoOutput(e)}
+          />
+        </label>
+        <button onClick={clickEdit} >
+          {edit_mode ? "close editor" : "edit script"}
+        </button>
+        <div className="red">
+          {error_message}
+        </div>
+      </div>
+    );
+  }
+
+
+  const root = createRoot(document.getElementById('root'));
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+</script>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: sans-serif;
+    margin: 20px;
+    padding: 0;
+  }
+
+  h1 {
+    margin-top: 0;
+    font-size: 22px;
+  }
+
+  h2 {
+    margin-top: 0;
+    font-size: 20px;
+  }
+
+  h3 {
+    margin-top: 0;
+    font-size: 18px;
+  }
+
+  h4 {
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  h5 {
+    margin-top: 0;
+    font-size: 14px;
+  }
+
+  h6 {
+    margin-top: 0;
+    font-size: 12px;
+  }
+
+  code {
+    font-size: 1.2em;
+  }
+
+  ul {
+    padding-inline-start: 20px;
+  }
+
+  textarea {
+    width: 72em;
+    height: 10em;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  label {
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .field {
+    display: flex;
+  }
+
+  .red {
+    color: red;
+  }
+</style>
+
+</html>
