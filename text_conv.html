@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+  <meta charset="utf-8" />
+  <title>Text Converter</title>
+</head>
+
 <body>
   <div id="root"></div>
 </body>
+
 <!-- This setup is not suitable for production. -->
 <!-- Only use it in development! -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -99,9 +105,9 @@
       try {
         const f = new Function('str', code + 'return str;');
         str = f(str);
-        if(!str){
+        if (!str) {
           setErrorMessage("str is null or undefined")
-        }else{
+        } else {
           setErrorMessage("");
         }
       } catch (e) {
@@ -110,7 +116,7 @@
       setOutputText(str);
     }
 
-    function reDraw(){
+    function reDraw() {
       setUpdata(!update);
     }
 
