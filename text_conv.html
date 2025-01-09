@@ -90,7 +90,7 @@
     const [outputText, setOutputText] = useState('');
     const [editMode, changeEditMode] = useState(editMode0);
     const [errorMessage, setErrorMessage] = useState("");
-    const [update,setUpdata] = useState(false);
+    const [update, setUpdata] = useState(false);
 
     function updateOutputText(str, code) {
       setInputText(str);
@@ -126,11 +126,11 @@
       setUpdata(!update);
     }
 
-    function clearParams(){
+    function clearParams() {
       const url = new URL(location);
       const keys = Array.from(url.searchParams.keys());
-      if(keys.length>0){
-        for (const key of keys){
+      if (keys.length > 0) {
+        for (const key of keys) {
           url.searchParams.delete(key);
         }
         history.pushState({}, "", url);
@@ -209,7 +209,7 @@
             share
           </button>
           <div className="red">
-            {(func==funcName && DATA[func]==codeText)? "": "Not saved"}
+            {(func == funcName && DATA[func] == codeText) ? "" : "Not saved"}
           </div>
         </div>
         <label>
