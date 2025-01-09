@@ -99,11 +99,20 @@
       try {
         const f = new Function('str', code + 'return str;');
         str = f(str);
-        setErrorMessage("");
+        console.log(str);
+        if(!str){
+          setErrorMessage("str is null or undefined")
+        }else{
+          setErrorMessage("");
+        }
       } catch (e) {
         setErrorMessage(e.message);
       }
       setOutputText(str);
+    }
+
+    function reDraw(){
+      setUpdata(!update);
     }
 
     function changeCode(title) {
@@ -123,7 +132,7 @@
       saveData(DATA);
       changeCode(funcName);
       clearParams();
-      setUpdata(!update);
+      reDraw();
     }
 
     function clearParams() {
