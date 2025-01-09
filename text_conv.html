@@ -99,7 +99,6 @@
       try {
         const f = new Function('str', code + 'return str;');
         str = f(str);
-        console.log(str);
         if(!str){
           setErrorMessage("str is null or undefined")
         }else{
