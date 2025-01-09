@@ -40,7 +40,7 @@
       str = str.split(sep).reverse().join(sep);
       `,
   }
-  const cleanSampleScript = function (str) {
+  const cleanSampleCode = function (str) {
     str = str.replace(/\n      /g, "\n"); // 行頭8Space
     str = str.replace(/^\n/i, ""); // 最初の行
     return str;
@@ -55,7 +55,7 @@
     }
     return Object.fromEntries(
       Object.entries(SAMPLE).map((
-        [key, val]) => [key, cleanSampleScript(val)]
+        [key, val]) => [key, cleanSampleCode(val)]
       ));
   }
 
@@ -68,36 +68,36 @@
 
     const DATA = loadData();
     let key0 = Object.keys(DATA)[0];
-    let edit_mode0 = false;
+    let editMode0 = false;
     let func0 = key0;
     let funcName0 = key0;
-    let script_text0 = DATA[key0];
+    let codeText0 = DATA[key0];
 
     // URL param
     const searchParams = new URLSearchParams(location.search);
-    if (searchParams.has("title") && searchParams.has("script")) {
+    if (searchParams.has("title") && searchParams.has("code")) {
       const title = LZString.decompressFromEncodedURIComponent(searchParams.get("title"));
-      const script = LZString.decompressFromEncodedURIComponent(searchParams.get("script"));
+      const code = LZString.decompressFromEncodedURIComponent(searchParams.get("code"));
       funcName0 = title;
-      script_text0 = script;
-      edit_mode0 = true;
+      codeText0 = code;
+      editMode0 = true;
     }
 
     const [func, setFunc] = useState(func0);
     const [funcName, setFuncName] = useState(funcName0);
-    const [script_text, setScriptText] = useState(script_text0);
-    const [input_text, setInputText] = useState('');
-    const [output_text, setOutputText] = useState('');
-    const [edit_mode, changeEditMode] = useState(edit_mode0);
-    const [error_message, setErrorMessage] = useState("");
+    const [codeText, setCodeText] = useState(codeText0);
+    const [inputText, setInputText] = useState('');
+    const [outputText, setOutputText] = useState('');
+    const [editMode, changeEditMode] = useState(editMode0);
+    const [errorMessage, setErrorMessage] = useState("");
     const [update,setUpdata] = useState(false);
 
-    function updateOutputText(str, script) {
+    function updateOutputText(str, code) {
       setInputText(str);
-      setScriptText(script);
+      setCodeText(code);
 
       try {
-        const f = new Function('str', script + 'return str;');
+        const f = new Function('str', code + 'return str;');
         str = f(str);
         setErrorMessage("");
       } catch (e) {
@@ -106,22 +106,22 @@
       setOutputText(str);
     }
 
-    function changeScript(title) {
+    function changeCode(title) {
       setFunc(title);
       setFuncName(title);
 
-      const script = DATA[title];
-      updateOutputText(input_text, script);
+      const code = DATA[title];
+      updateOutputText(inputText, code);
     }
 
     function clickEdit() {
-      changeEditMode(!edit_mode);
+      changeEditMode(!editMode);
     }
 
     function clickSave() {
-      DATA[funcName] = script_text;
+      DATA[funcName] = codeText;
       saveData(DATA);
-      changeScript(funcName);
+      changeCode(funcName);
       clearParams();
       setUpdata(!update);
     }
@@ -140,18 +140,17 @@
     function clickRemove() {
       delete DATA[funcName];
       saveData(DATA);
-      changeScript(Object.keys(DATA)[0]);
-
+      changeCode(Object.keys(DATA)[0]);
       clearParams();
     }
 
     function clickShare() {
       const title = LZString.compressToEncodedURIComponent(funcName);
-      const script = LZString.compressToEncodedURIComponent(script_text);
+      const code = LZString.compressToEncodedURIComponent(codeText);
       let url = new URL(window.location.href);
       let params = new URLSearchParams;
       params.set('title', title);
-      params.set('script', script);
+      params.set('code', code);
       url.search = params;
 
       // set to clipboard
@@ -169,7 +168,7 @@
           Function:
           <select
             value={func}
-            onChange={e => changeScript(e.target.value)}>
+            onChange={e => changeCode(e.target.value)}>
             {
               Object.entries(DATA).map(([key, val]) => {
                 return (<option key={key} value={key}>{key}</option>);
@@ -177,22 +176,22 @@
             }
           </select>
           <input
-            style={{ display: edit_mode ? "block" : "none" }}
+            style={{ display: editMode ? "block" : "none" }}
             value={funcName}
             onChange={e => setFuncName(e.target.value)}
           />
         </label>
-        <label style={{ display: edit_mode ? "block" : "none" }}>
-          Script:
+        <label style={{ display: editMode ? "block" : "none" }}>
+          Code:
           <textarea
-            placeholder="Script Text"
-            value={script_text}
-            onChange={e => updateOutputText(input_text, e.target.value)}
+            placeholder="Code Text"
+            value={codeText}
+            onChange={e => updateOutputText(inputText, e.target.value)}
           />
         </label>
         <div
           className="field"
-          style={{ display: edit_mode ? "block" : "none" }}
+          style={{ display: editMode ? "block" : "none" }}
         >
           <button
             onClick={clickSave}
@@ -210,15 +209,15 @@
             share
           </button>
           <div className="red">
-            {(func==funcName && DATA[func]==script_text)? "": "Not saved"}
+            {(func==funcName && DATA[func]==codeText)? "": "Not saved"}
           </div>
         </div>
         <label>
           Input:
           <textarea
             placeholder="Input Text"
-            value={input_text}
-            onChange={e => updateOutputText(e.target.value, script_text)}
+            value={inputText}
+            onChange={e => updateOutputText(e.target.value, codeText)}
           />
         </label>
         <label>
@@ -226,15 +225,15 @@
           <textarea
             placeholder="Output Text"
             readOnly
-            value={output_text}
+            value={outputText}
             onMouseOver={e => intoOutput(e)}
           />
         </label>
         <button onClick={clickEdit} >
-          {edit_mode ? "close editor" : "edit script"}
+          {editMode ? "close editor" : "edit code"}
         </button>
         <div className="red">
-          {error_message}
+          {errorMessage}
         </div>
       </div>
     );
