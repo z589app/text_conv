@@ -8,6 +8,7 @@
 <!-- Only use it in development! -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script async src="https://ga.jspm.io/npm:es-module-shims@1.7.0/dist/es-module-shims.js"></script>
+<script langaget="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 <script type="importmap">
 {
   "imports": {
@@ -66,14 +67,25 @@
   let App = function Form() {
 
     const DATA = loadData();
+    let key0 = Object.keys(DATA)[0];
+    let edit_mode0 = false;
 
-    const key0 = Object.keys(DATA)[0];
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.searchParams);
+    if (searchParams.has("title") && searchParams.has("script")) {
+      const title = LZString.decompressFromEncodedURIComponent(searchParams.get("title"));
+      const script = LZString.decompressFromEncodedURIComponent(searchParams.get("script"));
+      DATA[title] = script;
+      key0 = title;
+      edit_mode0 = true;
+    }
+
     const [func, setFunc] = useState(key0);
     const [funcName, setFuncName] = useState(key0);
     const [script_text, setScriptText] = useState(DATA[key0]);
     const [input_text, setInputText] = useState('');
     const [output_text, setOutputText] = useState('');
-    const [edit_mode, changeEditMode] = useState(false);
+    const [edit_mode, changeEditMode] = useState(edit_mode0);
     const [error_message, setErrorMessage] = useState("");
 
     function changeInputText(str, script) {
@@ -114,7 +126,21 @@
       changeScript(Object.keys(DATA)[0]);
     }
 
-    function intoOutput(e){
+    function clickShare() {
+      const title = LZString.compressToEncodedURIComponent(funcName);
+      const script = LZString.compressToEncodedURIComponent(script_text);
+      let url = new URL(window.location.href);
+      let params = new URLSearchParams;
+      params.set('title', title);
+      params.set('script', script);
+      url.search = params;
+
+      // set to clipboard
+      navigator.clipboard.writeText(url.href);
+      alert("set URL to Clipboard, \n" + url.href);
+    }
+
+    function intoOutput(e) {
       e.target.select();
     }
 
@@ -158,6 +184,11 @@
             onClick={clickRemove}
           >
             remove
+          </button>
+          <button
+            onClick={clickShare}
+          >
+            share
           </button>
         </div>
         <label>
