@@ -70,8 +70,7 @@
     let key0 = Object.keys(DATA)[0];
     let edit_mode0 = false;
 
-    const url = new URL(window.location.href);
-    const searchParams = new URLSearchParams(url.searchParams);
+    const searchParams = new URLSearchParams(location.search);
     if (searchParams.has("title") && searchParams.has("script")) {
       const title = LZString.decompressFromEncodedURIComponent(searchParams.get("title"));
       const script = LZString.decompressFromEncodedURIComponent(searchParams.get("script"));
