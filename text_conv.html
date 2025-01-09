@@ -123,6 +123,12 @@
       delete DATA[funcName];
       saveData(DATA);
       changeScript(Object.keys(DATA)[0]);
+      const url = new URL(location);
+      const keys = Array.from(url.searchParams.keys());
+      for (const key of keys){
+        url.searchParams.delete(key);
+      }
+      history.pushState({}, "", url);
     }
 
     function clickShare() {
