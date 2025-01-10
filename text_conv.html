@@ -43,6 +43,16 @@
       sep = " ";
       str = str.split(sep).reverse().join(sep);
       `,
+    "testCompress": `
+      let comp = LZString.compressToEncodedURIComponent(str);
+      let decomp = LZString.decompressFromEncodedURIComponent(comp);
+
+      str = "-- Comp(" + comp.length + "): --\\n"; 
+      str += comp;
+      str += "\\n";
+      str += "-- DeComp(" + decomp.length + "): --\\n";
+      str += decomp;
+      `,
   }
   const cleanSampleCode = function (str) {
     str = str.replace(/\n      /g, "\n"); // 行頭8Space
@@ -79,10 +89,10 @@
 
     // URL param
     const searchParams = new URLSearchParams(location.search);
-    if (searchParams.has("title") && searchParams.has("code")) {
-      const title = LZString.decompressFromEncodedURIComponent(searchParams.get("title"));
+    if (searchParams.has("func") && searchParams.has("code")) {
+      const func = LZString.decompressFromEncodedURIComponent(searchParams.get("func"));
       const code = LZString.decompressFromEncodedURIComponent(searchParams.get("code"));
-      funcName0 = title;
+      funcName0 = func;
       codeText0 = code;
       editMode0 = true;
     }
@@ -103,7 +113,7 @@
       try {
         const f = new Function('str', code + 'return str;');
         str = f(str);
-        if (!str) {
+        if (!str && str != "") {
           setErrorMessage("str is null or undefined")
         } else {
           setErrorMessage("");
@@ -118,11 +128,11 @@
       setUpdata(!update);
     }
 
-    function changeCode(title) {
-      setFunc(title);
-      setFuncName(title);
+    function changeCode(func) {
+      setFunc(func);
+      setFuncName(func);
 
-      const code = DATA[title];
+      const code = DATA[func];
       updateOutputText(inputText, code);
     }
 
@@ -157,11 +167,11 @@
     }
 
     function clickShare() {
-      const title = LZString.compressToEncodedURIComponent(funcName);
+      const func = LZString.compressToEncodedURIComponent(funcName);
       const code = LZString.compressToEncodedURIComponent(codeText);
       let url = new URL(window.location.href);
       let params = new URLSearchParams;
-      params.set('title', title);
+      params.set('func', func);
       params.set('code', code);
       url.search = params;
 
