@@ -114,7 +114,10 @@
         const f = new Function('str', code + 'return str;');
         str = f(str);
         if (!str && str != "") {
-          setErrorMessage("str is null or undefined")
+          setErrorMessage("str is null or undefined");
+        }else if(typeof str != 'string'){
+          setErrorMessage("str is not string type");
+          str = "";
         } else {
           setErrorMessage("");
         }
