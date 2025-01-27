@@ -119,7 +119,7 @@
         str = f(str);
         if (!str && str != "") {
           setErrorMessage("str is null or undefined");
-        }else if(typeof str != 'string'){
+        } else if (typeof str != 'string') {
           setErrorMessage("str is not string type");
           str = "";
         } else {
@@ -241,23 +241,25 @@
             {(func == funcName && DATA[func] == codeText) ? "" : "Not saved"}
           </span>
         </div>
-        <label>
-          Input:
-          <textarea
-            placeholder="Input Text"
-            value={inputText}
-            onChange={e => updateOutputText(e.target.value, codeText)}
-          />
-        </label>
-        <label>
-          Output:
-          <textarea
-            placeholder="Output Text"
-            readOnly
-            value={outputText}
-            onMouseOver={e => intoOutput(e)}
-          />
-        </label>
+        <div className="field">
+          <label className="label_50p">
+            Input:
+            <textarea
+              placeholder="Input Text"
+              value={inputText}
+              onChange={e => updateOutputText(e.target.value, codeText)}
+            />
+          </label>
+          <label className="label_50p">
+            Output:
+            <textarea
+              placeholder="Output Text"
+              readOnly
+              value={outputText}
+              onMouseOver={e => intoOutput(e)}
+            />
+          </label>
+        </div>
         <button onClick={clickEdit} >
           {editMode ? "close editor" : "edit code"}
         </button>
@@ -332,7 +334,11 @@
     display: block;
   }
 
+  label_50p {
+    width: 50%;
+  }
   label {
+    width: 100%;
     margin-bottom: 10px;
     display: block;
   }
