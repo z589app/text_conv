@@ -184,7 +184,7 @@
 
       // set to clipboard
       navigator.clipboard.writeText(url.href);
-      alert("set URL to Clipboard, \n" + url.href);
+      alert("set func & code URL into Clipboard, \n" + url.href);
     }
 
     function intoOutput(e) {
@@ -245,7 +245,7 @@
           <label className="label_50p">
             Input:
             <textarea
-              placeholder="Input Text"
+              placeholder="Input"
               value={inputText}
               onChange={e => updateOutputText(e.target.value, codeText)}
             />
@@ -253,7 +253,7 @@
           <label className="label_50p">
             Output:
             <textarea
-              placeholder="Output Text"
+              placeholder="Output"
               readOnly
               value={outputText}
               onMouseOver={e => intoOutput(e)}
