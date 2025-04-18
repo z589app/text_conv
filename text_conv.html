@@ -34,16 +34,19 @@
 
   const SAMPLE = {
     "upper": `
+      opt['sample'] = "abcXYZ";
       str = str.toUpperCase();
       // str = str.toLowerCase();
       `,
     "replace": `
+      opt['sample'] = "abcdef";
       from = "abc";
       to = "xyz";
       str = str.replaceAll(from, to);
       str = str.replace(/ABC/g, "XYZ");
       `,
     "reverse": `
+      opt['sample'] = "sample. is This";
       sep = " ";
       str = str.split(sep).reverse().join(sep);
       `,
@@ -106,6 +109,8 @@
     const [codeText, setCodeText] = useState(codeText0);
     const [inputText, setInputText] = useState('');
     const [outputText, setOutputText] = useState('');
+    const [sampleInputText, setSampleInputText] = useState('Input');
+    const [sampleOutputText, setSampleOutputText] = useState('Output');
     const [editMode, changeEditMode] = useState(editMode0);
     const [errorMessage, setErrorMessage] = useState("");
     const [update, setUpdata] = useState(false);
@@ -115,8 +120,9 @@
       setCodeText(code);
 
       try {
-        const f = new Function('str', code + 'return str;');
-        str = f(str);
+        const opt = {};
+        const f = new Function('str', 'opt', code + 'return str;');
+        str = f(str, opt);
         if (!str && str != "") {
           setErrorMessage("str is null or undefined");
         } else if (typeof str != 'string') {
@@ -125,10 +131,17 @@
         } else {
           setErrorMessage("");
         }
+        setOutputText(str);
+
+        if(opt['sample']){
+          const dummyOpt = {};
+          setSampleInputText(opt['sample']);
+          setSampleOutputText(f(opt['sample'], dummyOpt));
+        }
+
       } catch (e) {
         setErrorMessage(e.message);
       }
-      setOutputText(str);
     }
 
     function reDraw() {
@@ -245,7 +258,7 @@
           <label className="label_50p">
             Input:
             <textarea
-              placeholder="Input"
+              placeholder={sampleInputText}
               value={inputText}
               onChange={e => updateOutputText(e.target.value, codeText)}
             />
@@ -253,7 +266,7 @@
           <label className="label_50p">
             Output:
             <textarea
-              placeholder="Output"
+              placeholder={sampleOutputText}
               readOnly
               value={outputText}
               onMouseOver={e => intoOutput(e)}
