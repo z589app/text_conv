@@ -269,8 +269,8 @@
             {(func == funcName && DATA[func] == codeText) ? "" : "Not saved"}
           </span>
         </div>
-        <div className="field">
-          <label className="label_50p">
+        <div className="field_inout">
+          <label>
             Input:
             <textarea
               placeholder={sampleInputText}
@@ -278,7 +278,7 @@
               onChange={e => updateOutputText(e.target.value, codeText)}
             />
           </label>
-          <label className="label_50p">
+          <label>
             Output:
             <textarea
               placeholder={sampleOutputText}
@@ -362,9 +362,6 @@
     display: block;
   }
 
-  label_50p {
-    width: 50%;
-  }
   label {
     width: 100%;
     margin-bottom: 10px;
@@ -373,6 +370,17 @@
 
   .field {
     display: flex;
+  }
+
+  .field_inout {
+    display: flex;
+    flex-direction: column;
+  }
+  @media screen and (min-width:1000px){
+    .field_inout{
+      display: flex;
+      flex-direction: row;
+    }
   }
 
   .red {
