@@ -204,6 +204,20 @@
       e.target.select();
     }
 
+    function keyDownInCodeText(e){
+      // Code内でのキー操作
+      if(e.key=='Tab'){ // Tabキー -> 2 SPace
+        e.preventDefault();
+        let val = e.target.value;
+        let start = e.target.selectionStart;
+        let end = e.target.selectionEnd;
+        e.target.value = val.slice(0, start) + "  " + val.slice(end);
+      }else if(e.ctrlKey==true && e.key=='s'){ // Ctrl+S -> Save
+        e.preventDefault();
+        clickSave();
+      }
+    }
+
     return (
       <div>
         <label className="field">
@@ -228,6 +242,7 @@
           <textarea
             placeholder="Code Text"
             value={codeText}
+            onKeyDown={e => keyDownInCodeText(e)}
             onChange={e => updateOutputText(inputText, e.target.value)}
           />
         </label>
